@@ -2,17 +2,17 @@
   description = "Nix utils used across yatima inc projects.";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs";
-    utils.url = "github:numtide/flake-utils";
+    flake-utils.url = "github:numtide/flake-utils";
     naersk.url = "github:nmattia/naersk";
   };
 
   outputs =
     { self
     , nixpkgs
-    , utils
+    , flake-utils
     , naersk
     }:
-    utils.lib.eachDefaultSystem (system:
+    flake-utils.lib.eachDefaultSystem (system:
     let
       overlays = [ (import ./nix/rust-overlay.nix) ];
       pkgs = import nixpkgs { inherit system overlays;};
@@ -44,7 +44,7 @@
       testRustProject = args: buildRustProject { doCheck = true; } // args;
     in
     {
-      lib = utils.lib // {
+      lib = {
         inherit
           naerskDefault
           rustDefault
