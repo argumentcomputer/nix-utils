@@ -12,9 +12,19 @@
     , flake-utils
     , naersk
     }:
+    let 
+      rustLibTemplate = {
+        path = ./templates/rust-lib;
+        description = "A rust library setup with a github action";
+      };
+      overlays = [ (import ./nix/rust-overlay.nix) ];
+      packageName = "yatima-nix-utils";
+      # This currently breaks purity
+      filterRustProject = builtins.filterSource
+        (path: type: type != "directory" || builtins.baseNameOf path != "target");
+    in
     flake-utils.lib.eachDefaultSystem (system:
     let
-      overlays = [ (import ./nix/rust-overlay.nix) ];
       pkgs = import nixpkgs { inherit system overlays;};
       # Get a version of rust as you specify
       getRust = args: import ./nix/rust.nix { nixpkgs = pkgs; } // args;
@@ -27,10 +37,6 @@
         cargo = rustDefault;
       };
 
-      packageName = "yatima-nix-utils";
-      filterRustProject = builtins.filterSource
-        (path: type: type != "directory" || builtins.baseNameOf path != "target");
-
 
       buildRustProject = { naersk ? naerskDefault, ... } @ args: naersk.buildPackage ({
         buildInputs = with pkgs; [ ];
@@ -38,7 +44,7 @@
         copyLibs = true;
         remapPathPrefix =
           true; # remove nix store references for a smaller output package
-      } // args);
+        } // args);
 
       # Convenient for running tests
       testRustProject = args: buildRustProject ({ doCheck = true; } // args);
@@ -46,11 +52,11 @@
     {
       lib = {
         inherit
-          naerskDefault
-          rustDefault
-          buildRustProject
-          testRustProject
-          filterRustProject;
+        naerskDefault
+        rustDefault
+        buildRustProject
+        testRustProject
+        filterRustProject;
       };
       nixpkgs = pkgs;
 
@@ -62,5 +68,13 @@
           nix-linter
         ];
       };
-    });
+    }) //
+    # Not dependent on system
+    {
+      defaultTemplate = rustLibTemplate;
+
+      templates = {
+        rust-lib = rustLibTemplate;
+      };
+    };
 }
