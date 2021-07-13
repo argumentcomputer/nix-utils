@@ -14,7 +14,6 @@
     }:
     utils.lib.eachDefaultSystem (system:
     let
-      lib = nixpkgs.lib;
       overlays = [ (import ./nix/rust-overlay.nix) ];
       pkgs = import nixpkgs { inherit system overlays;};
       # Get a version of rust as you specify
@@ -29,6 +28,9 @@
       };
 
       packageName = "yatima-nix-utils";
+      filterRustProject = builtins.filterSource
+        (path: type: type != "directory" || builtins.baseNameOf path != "target");
+
 
       buildRustProject = { naersk ? naerskDefault, ... } @ args: naersk.buildPackage {
         buildInputs = with pkgs; [ ];
@@ -42,17 +44,19 @@
       testRustProject = args: buildRustProject { doCheck = true; } // args;
     in
     {
-      inherit overlays;
       lib = utils.lib // {
         inherit
           naerskDefault
           rustDefault
           buildRustProject
-          testRustProject;
-        };
+          testRustProject
+          filterRustProject;
+      };
+      nixpkgs = pkgs;
 
       # `nix develop`
       devShell = pkgs.mkShell {
+        name = packageName;
         buildInputs = with pkgs; [
           nixpkgs-fmt
           nix-linter
