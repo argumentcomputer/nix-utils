@@ -43,7 +43,7 @@
     in
     {
       inherit overlays;
-      lib = {
+      lib = utils.lib // {
         inherit
           naerskDefault
           rustDefault
