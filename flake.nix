@@ -32,16 +32,16 @@
         (path: type: type != "directory" || builtins.baseNameOf path != "target");
 
 
-      buildRustProject = { naersk ? naerskDefault, ... } @ args: naersk.buildPackage {
+      buildRustProject = { naersk ? naerskDefault, ... } @ args: naersk.buildPackage ({
         buildInputs = with pkgs; [ ];
         targets = [ ];
         copyLibs = true;
         remapPathPrefix =
           true; # remove nix store references for a smaller output package
-      } // args;
+      } // args);
 
       # Convenient for running tests
-      testRustProject = args: buildRustProject { doCheck = true; } // args;
+      testRustProject = args: buildRustProject ({ doCheck = true; } // args);
     in
     {
       lib = {
