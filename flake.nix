@@ -30,7 +30,7 @@
 
       packageName = "yatima-nix-utils";
 
-      buildRustProject = args: naersk-lib.buildPackage {
+      buildRustProject = { naersk ? naerskDefault, ... } @ args: naersk.buildPackage {
         buildInputs = with pkgs; [ ];
         targets = [ ];
         copyLibs = true;
