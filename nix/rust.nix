@@ -1,7 +1,7 @@
 { nixpkgs
 , channel ? "nightly"
-, date ? "2021-05-30"
-, sha256 ? "N+G7d3+glt0O5n1yFRJdwFGg2xHRLl31YbxNRzwXP2w="
+, date ? "2021-08-24"
+, sha256 ? "30dHH53OlZt6h2OJxeVJ8IokaQrSaV7aGfhUiv2HU0Q="
 , targets ? [ "wasm32-unknown-unknown" "wasm32-wasi" ]
 }:
 let

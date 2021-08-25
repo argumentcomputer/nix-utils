@@ -27,7 +27,7 @@
     let
       pkgs = import nixpkgs { inherit system overlays;};
       # Get a version of rust as you specify
-      getRust = args: import ./nix/rust.nix { nixpkgs = pkgs; } // args;
+      getRust = args: import ./nix/rust.nix ({ nixpkgs = pkgs; } // args);
       # This is the version used across projects
       rustDefault = getRust {};
 
@@ -60,6 +60,12 @@
         filterRustProject;
       };
       nixpkgs = pkgs;
+
+      # `nix flake check`
+      checks = {
+        getRust = getRust {};
+        inherit naerskDefault;
+      };
 
       # `nix develop`
       devShell = pkgs.mkShell {
