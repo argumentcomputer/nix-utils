@@ -52,6 +52,7 @@
     {
       lib = {
         inherit
+        getRust
         naerskDefault
         rustDefault
         buildRustProject
