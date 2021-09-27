@@ -17,7 +17,9 @@
     },
     "naersk": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": [
+          "nixpkgs"
+        ]
       },
       "locked": {
         "lastModified": 1618844365,
@@ -37,20 +39,6 @@
       "locked": {
         "lastModified": 1626198252,
         "narHash": "sha256-OF9Adtb2puee7EqFTcWnNxlnfjSrDuUawgc0s+kKfiQ=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "81e24d81e47fb7608f7935d6f4ace6f64681c31c",
-        "type": "github"
-      },
-      "original": {
-        "id": "nixpkgs",
-        "type": "indirect"
-      }
-    },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1626198252,
-        "narHash": "sha256-OF9Adtb2puee7EqFTcWnNxlnfjSrDuUawgc0s+kKfiQ=",
         "owner": "nixos",
         "repo": "nixpkgs",
         "rev": "81e24d81e47fb7608f7935d6f4ace6f64681c31c",
@@ -66,7 +54,7 @@
       "inputs": {
         "flake-utils": "flake-utils",
         "naersk": "naersk",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs"
       }
     }
   },

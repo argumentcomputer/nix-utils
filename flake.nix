@@ -1,9 +1,15 @@
 {
   description = "Nix utils used across yatima inc projects.";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs";
-    flake-utils.url = "github:numtide/flake-utils";
-    naersk.url = "github:yatima-inc/naersk";
+    nixpkgs.url = github:nixos/nixpkgs;
+    flake-utils = {
+      url = github:numtide/flake-utils;
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    naersk = {
+      url = github:yatima-inc/naersk;
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -13,10 +19,7 @@
     , naersk
     }:
     let 
-      rustLibTemplate = {
-        path = ./templates/rust-lib;
-        description = "A rust library setup with a github action";
-      };
+      templates = import ./templates.nix {};
       overlays = [ (import ./nix/rust-overlay.nix) ];
       packageName = "yatima-nix-utils";
       # This currently breaks purity
@@ -64,7 +67,6 @@
       # `nix flake check`
       checks = {
         getRust = getRust {};
-        inherit naerskDefault;
       };
 
       # `nix develop`
@@ -78,10 +80,7 @@
     }) //
     # Not dependent on system
     {
-      defaultTemplate = rustLibTemplate;
-
-      templates = {
-        rust-lib = rustLibTemplate;
-      };
+      defaultTemplate = templates.rustLibTemplate;
+      inherit templates;
     };
 }
