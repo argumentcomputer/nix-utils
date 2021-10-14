@@ -33,11 +33,10 @@
       crateName = throw "TODO my-crate";
       root = ./.;
       project = buildRustProject { inherit root; };
-
     in
     {
       packages.${crateName} = project;
-      checks.${crateName} = testRustProject { doCheck = true; inherit root; };
+      checks.${crateName} = testRustProject { inherit root; };
 
       defaultPackage = self.packages.${system}.${crateName};
 

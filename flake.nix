@@ -33,15 +33,14 @@
       getRust = args: import ./nix/rust.nix ({ nixpkgs = pkgs; } // args);
       # This is the version used across projects
       rustDefault = getRust {};
-
-      # Naersk using the default rust version
-      naerskDefault = naersk.lib."${system}".override {
-        rustc = rustDefault;
-        cargo = rustDefault;
+      # Get a naersk with the input rust version
+      naerskWithRust = rust: naersk.lib."${system}".override {
+        rustc = rust;
+        cargo = rust;
       };
-
-
-      buildRustProject = { naersk ? naerskDefault, ... } @ args: naersk.buildPackage ({
+      # Naersk using the default rust version
+      naerskDefault = naerskWithRust rustDefault;
+      buildRustProject = { rust ? rustDefault, naersk ? naerskWithRust rust, ... } @ args: naersk.buildPackage ({
         buildInputs = with pkgs; [ ];
         targets = [ ];
         copyLibs = true;
@@ -57,6 +56,7 @@
         inherit
         getRust
         naerskDefault
+        naerskWithRust
         rustDefault
         buildRustProject
         testRustProject
