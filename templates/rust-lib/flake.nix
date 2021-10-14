@@ -9,7 +9,7 @@
     utils = {
       url = github:yatima-inc/nix-utils;
       inputs.nixpkgs.follows = "nixpkgs";
-    }
+    };
   };
 
   outputs =
