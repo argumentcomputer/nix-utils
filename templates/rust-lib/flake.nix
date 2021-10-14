@@ -1,14 +1,19 @@
 {
-  description = "TODO Description";
+  description = throw "TODO Description";
   inputs = {
     nixpkgs.url = github:nixos/nixpkgs;
     flake-utils = {
       url = github:numtide/flake-utils;
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    naersk = {
+      url = github:yatima-inc/naersk;
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     utils = {
       url = github:yatima-inc/nix-utils;
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.naersk.follows = "naersk";
     };
   };
 
@@ -17,14 +22,15 @@
     , nixpkgs
     , flake-utils
     , utils
+    , naersk
     }:
     flake-utils.lib.eachDefaultSystem (system:
     let
       lib = utils.lib.${system};
-      pkgs = nixpkgs.${system};
+      pkgs = import nixpkgs { inherit system; };
       inherit (lib) buildRustProject testRustProject rustDefault filterRustProject;
       rust = rustDefault;
-      crateName = throw "my-crate";
+      crateName = throw "TODO my-crate";
       root = ./.;
       project = buildRustProject { inherit root; };
 
