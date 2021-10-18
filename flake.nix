@@ -40,13 +40,13 @@
       };
       # Naersk using the default rust version
       naerskDefault = naerskWithRust rustDefault;
-      buildRustProject = { rust ? rustDefault, naersk ? naerskWithRust rust, ... } @ args: naersk.buildPackage ({
+      buildRustProject = pkgs.makeOverridable ({ rust ? rustDefault, naersk ? naerskWithRust rust, ... } @ args: naersk.buildPackage ({
         buildInputs = with pkgs; [ ];
         targets = [ ];
         copyLibs = true;
         remapPathPrefix =
           true; # remove nix store references for a smaller output package
-        } // args);
+        } // args));
 
       # Convenient for running tests
       testRustProject = args: buildRustProject ({ doCheck = true; } // args);
