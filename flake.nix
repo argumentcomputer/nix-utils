@@ -19,6 +19,7 @@
     , naersk
     }:
     let
+      buildCLib = import ./nix/buildCLib.nix { pkgs = nixpkgs; };
       templates = import ./templates.nix { };
       overlays = [ (import ./nix/rust-overlay.nix) ];
       packageName = "yatima-nix-utils";
@@ -30,7 +31,6 @@
       (system:
       let
         pkgs = import nixpkgs { inherit system overlays; };
-        buildCLib = import ./nix/buildCLib.nix { inherit pkgs system; };
         # Get a version of rust as you specify
         getRust = args: import ./nix/rust.nix ({
           nixpkgs = pkgs;
@@ -69,7 +69,6 @@
             testRustProject
             filterRustProject;
         };
-        nixpkgs = pkgs;
 
         # `nix flake check`
         checks = {

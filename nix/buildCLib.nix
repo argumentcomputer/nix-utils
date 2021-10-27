@@ -1,5 +1,5 @@
 # A very simple setup to compile C and C++ code
-{ pkgs, system }:
+{ pkgs }:
 with builtins;
 let
   inherit (pkgs) stdenv lib;
@@ -31,10 +31,10 @@ let
               "${cc}/bin/cc ${commonCCOptions} -shared -o ${libName} ${sourceFiles}"
             ];
       in
-      pkgs.stdenv.mkDerivation ({
+      stdenv.mkDerivation ({
         inherit src system;
         name = libName;
-        buildInputs = with pkgs; [ cc clib ] ++ staticLibDeps;
+        buildInputs = with pkgs.${system}; [ cc clib ] ++ staticLibDeps;
         NIX_DEBUG = 1;
         buildPhase = pkgs.lib.concatStringsSep "\n" buildSteps;
         installPhase = ''
