@@ -19,7 +19,6 @@
     , naersk
     }:
     let
-      buildCLib = import ./nix/buildCLib.nix { pkgs = nixpkgs; };
       templates = import ./templates.nix { };
       overlays = [ (import ./nix/rust-overlay.nix) ];
       packageName = "yatima-nix-utils";
@@ -30,6 +29,7 @@
     flake-utils.lib.eachDefaultSystem
       (system:
       let
+        buildCLib = import ./nix/buildCLib.nix { pkgs = nixpkgs; inherit system; };
         pkgs = import nixpkgs { inherit system overlays; };
         # Get a version of rust as you specify
         getRust = args: import ./nix/rust.nix ({

@@ -1,8 +1,9 @@
 # A very simple setup to compile C and C++ code
-{ pkgs }:
+{ pkgs, system }:
 with builtins;
 let
-  inherit (pkgs) stdenv lib;
+  inherit (pkgs) legacyPackages lib;
+  inherit (legacyPackages.${system}) stdenv;
   joinArgs = lib.concatStringsSep " ";
   protoBuildCLib = lib.makeOverridable
     ({ name
@@ -16,6 +17,7 @@ let
      , sourceFiles ? [ "*.c" ]
      , debug ? false
      , extraDrvArgs ? {}
+     , staticLibDeps ? []
      }:
       let
         defaultOptions = [ "-Wall" "-pedantic" "-O3" (if debug then "-ggdb" else "") ];
@@ -23,18 +25,18 @@ let
         buildSteps =
           if static then
             [
-              "${cc}/bin/cc ${commonCCOptions} -c ${joinArgs sourceFiles}"
+              "${cc}/bin/cc ${joinArgs commonCCOptions} -c ${joinArgs sourceFiles}"
               "ar rcs ${libName} ${objectFile}"
 
             ] else
             [
-              "${cc}/bin/cc ${commonCCOptions} -shared -o ${libName} ${sourceFiles}"
+              "${cc}/bin/cc ${joinArgs commonCCOptions} -shared -o ${libName} ${joinArgs sourceFiles}"
             ];
       in
       stdenv.mkDerivation ({
         inherit src system;
         name = libName;
-        buildInputs = with pkgs.${system}; [ cc clib ] ++ staticLibDeps;
+        buildInputs = with legacyPackages.${system}; [ cc clib ] ++ staticLibDeps;
         NIX_DEBUG = 1;
         buildPhase = pkgs.lib.concatStringsSep "\n" buildSteps;
         installPhase = ''
