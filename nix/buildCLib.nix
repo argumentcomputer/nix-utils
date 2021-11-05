@@ -5,6 +5,7 @@ let
   inherit (pkgs) legacyPackages lib;
   inherit (legacyPackages.${system}) stdenv;
   joinArgs = lib.concatStringsSep " ";
+  pathOfLib = dep: dep.libPath or "${dep}/${dep.libName or dep.name}";
   protoBuildCLib = lib.makeOverridable
     ({ name
      , src
@@ -17,20 +18,27 @@ let
      , sourceFiles ? [ "*.c" ]
      , debug ? false
      , extraDrvArgs ? {}
+     # Static libraries that wil be included in the resulting lib
      , staticLibDeps ? []
+     # Shared libraries to link to
+     , sharedLibDeps ? []
      }:
       let
         defaultOptions = [ "-Wall" "-pedantic" "-O3" (if debug then "-ggdb" else "") ];
         commonCCOptions = updateCCOptions defaultOptions;
+        libs = map (drv: "${drv}/${drv.name}") staticLibDeps;
+        linkerOpts = map (drv: "-L${drv}") sharedLibDeps;
+        objectFiles = [ "*.o" ];
         buildSteps =
           if static then
             [
               "${cc}/bin/cc ${joinArgs commonCCOptions} -c ${joinArgs sourceFiles}"
-              "ar rcs ${libName} ${objectFile}"
+              "ar rcs ${libName} ${joinArgs objectFiles}"
 
             ] else
             [
-              "${cc}/bin/cc ${joinArgs commonCCOptions} -shared -o ${libName} ${joinArgs sourceFiles}"
+              "${cc}/bin/cc ${joinArgs commonCCOptions} -c ${joinArgs sourceFiles}"
+              "${cc}/bin/cc ${joinArgs commonCCOptions} -shared -Wl,--whole-archive ${joinArgs libs} ${joinArgs objectFiles} -Wl,--no-whole-archive ${joinArgs linkerOpts} -o ${libName}"
             ];
       in
       stdenv.mkDerivation ({

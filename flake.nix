@@ -71,9 +71,18 @@
         };
 
         # `nix flake check`
-        checks = {
-          getRust = getRust { };
-        };
+        checks =
+          let
+            cBuild = buildCLib {
+              name = "buildCLib-test";
+              src = ./templates/c-lib/src;
+            };
+          in
+          {
+            getRust = getRust { };
+            inherit cBuild;
+            cBuild-shared = cBuild.sharedLib;
+          };
 
         # `nix develop`
         devShell = pkgs.mkShell {
