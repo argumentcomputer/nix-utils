@@ -1,8 +1,8 @@
 # A very simple setup to compile C and C++ code
-{ pkgs, system }:
+{ pkgs, system, lib }:
 with builtins;
 let
-  inherit (pkgs) legacyPackages lib;
+  inherit (pkgs) legacyPackages;
   inherit (legacyPackages.${system}) stdenv;
   joinArgs = lib.concatStringsSep " ";
   pathOfLib = dep: dep.libPath or "${dep}/${dep.libName or dep.name}";

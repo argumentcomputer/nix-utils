@@ -20,6 +20,7 @@
     }:
     let
       templates = import ./templates.nix { };
+      customLib = import ./nix/lib.nix { inherit (nixpkgs) lib; };
       overlays = [ (import ./nix/rust-overlay.nix) ];
       packageName = "yatima-nix-utils";
       # This currently breaks purity
@@ -29,8 +30,9 @@
     flake-utils.lib.eachDefaultSystem
       (system:
       let
-        buildCLib = import ./nix/buildCLib.nix { pkgs = nixpkgs; inherit system; };
         pkgs = import nixpkgs { inherit system overlays; };
+        lib = pkgs.lib // customLib;
+        buildCLib = import ./nix/buildCLib.nix { pkgs = nixpkgs; inherit system lib; };
         # Get a version of rust as you specify
         getRust = args: import ./nix/rust.nix ({
           nixpkgs = pkgs;
@@ -56,7 +58,7 @@
         testRustProject = args: buildRustProject ({ doCheck = true; } // args);
       in
       {
-        lib = {
+        lib = lib // {
           inherit
             # C functions
             buildCLib
