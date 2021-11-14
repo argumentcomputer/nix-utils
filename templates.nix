@@ -1,5 +1,5 @@
 {}:
-let
+{
   rustLibTemplate = {
     path = ./templates/rust-lib;
     description = "A rust library setup with a github action";
@@ -8,7 +8,8 @@ let
     path = ./templates/c-lib;
     description = "A simple C/C++ library setup with a github action";
   };
-in
-{
-  inherit rustLibTemplate cLibTemplate;
+  leanTemplate = {
+    path = ./templates/lean-package;
+    description = "A simple Lean package setup";
+  };
 }
