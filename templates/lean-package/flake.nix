@@ -35,14 +35,22 @@
           # Where the lean files are located
           src = ./src;
         };
+        test = leanPkgs.buildLeanPackage {
+          name = "Tests";
+          deps = [ project ];
+          # Where the lean files are located
+          src = ./test;
+        };
       in
       {
-        inherit project;
+        inherit project test;
         packages = {
           ${name} = project.executable;
         };
 
-        defaultPackage = self.packages.${system};
+        checks.test = test.executable;
+
+        defaultPackage = self.packages.${system}.${name};
         devShell = nixpkgs.mkShell {
           buildInputs = with pkgs; [
             leanPkgs.lean
