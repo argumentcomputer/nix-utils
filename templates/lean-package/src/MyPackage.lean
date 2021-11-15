@@ -1,9 +1,7 @@
-import IPLD
-
 
 namespace MyPackage
 def sayHello (name : String) : IO Unit := do
-  print! "Hello {name}!"
+  println! "Hello {name}!"
 
-#eval "Hello, world!"
+/- #eval "Hello, world!" -/
 end MyPackage

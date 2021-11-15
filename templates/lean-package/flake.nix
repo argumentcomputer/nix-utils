@@ -31,7 +31,7 @@
         name = "MyPackage";  # must match the name of the top-level .lean file
         project = leanPkgs.buildLeanPackage {
           inherit name;
-          deps = [ lean-ipld.project.${system} ];
+          # deps = [ lean-ipld.project.${system} ];
           # Where the lean files are located
           src = ./src;
         };
