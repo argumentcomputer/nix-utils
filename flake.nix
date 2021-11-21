@@ -85,6 +85,11 @@
                 getRust = getRust { };
                 inherit cBuild;
                 cBuild-shared = cBuild.sharedLib;
+                makeBareDerivation = lib.makeBareDerivation {
+                  inherit system pkgs;
+                  name = "makeBareDerivation";
+                  buildCommand = "echo hello > $out";
+                };
               };
 
             # `nix develop`

@@ -14,19 +14,23 @@ with builtins;
     self // newProps
   );
   # A simplified derivation function
-  mkBareDerivation = lib.makeOverridable (args@{ buildCommand, buildInputs ? [ ], ... }: derivation (args // {
-    inherit (pkgs) stdenv;
-    inherit system;
-    buildInputs = (buildInputs) ++ [ pkgs.coreutils ];
-    builder = pkgs.stdenv.shell;
-    PATH = lib.foldl (acc: pkg: acc + ":${pkg}/bin") buildInputs;
-    args = [
-      "-c"
-      ''
-        set -euo pipefail
-        ${buildCommand}
-      ''
-    ];
-  }));
+  makeBareDerivation = lib.makeOverridable (args@{ system, pkgs, buildCommand, buildInputs ? [ ], ... }:
+    let
+      extraArgs = lib.filterAttrs (name: value: name != "pkgs") args;
+    in
+    derivation (extraArgs // {
+      inherit (pkgs) stdenv;
+      inherit system;
+      buildInputs = buildInputs ++ [ pkgs.coreutils ];
+      builder = pkgs.stdenv.shell;
+      PATH = lib.foldl (acc: pkg: acc + ":${pkg}/bin") "" buildInputs;
+      args = [
+        "-c"
+        ''
+          set -euo pipefail
+          ${buildCommand}
+        ''
+      ];
+    }));
 
 }
