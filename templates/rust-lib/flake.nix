@@ -7,7 +7,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     naersk = {
-      url = github:yatima-inc/naersk;
+      url = github:nix-community/naersk;
       inputs.nixpkgs.follows = "nixpkgs";
     };
     utils = {
@@ -27,7 +27,7 @@
     flake-utils.lib.eachDefaultSystem (system:
     let
       lib = utils.lib.${system};
-      pkgs = import nixpkgs { inherit system; };
+      pkgs = nixpkgs.legacyPackages.${system};
       inherit (lib) buildRustProject testRustProject rustDefault filterRustProject;
       rust = rustDefault;
       crateName = throw "TODO my-crate";
