@@ -52,10 +52,12 @@
 
         defaultPackage = self.packages.${system}.${name};
         devShell = nixpkgs.mkShell {
+          inputsFrom = [ project.executable ];
           buildInputs = with pkgs; [
             leanPkgs.lean
           ];
-          LEAN_PATH = "${leanPkgs.Lean.modRoot}";
+          LEAN_PATH = lib.concatStringsSep ":" (map (d: "${d.modRoot}") (builtins.attrValues project.allExternalDeps));
+          LEAN_SRC_PATH = lib.concatStringsSep ":" (map (d: "${d.src}") (builtins.attrValues project.allExternalDeps));
         };
       });
 }

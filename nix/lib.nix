@@ -23,7 +23,7 @@ with builtins;
       inherit system;
       buildInputs = buildInputs ++ [ pkgs.coreutils ];
       builder = pkgs.stdenv.shell;
-      PATH = lib.foldl (acc: pkg: acc + ":${pkg}/bin") "" buildInputs;
+      PATH = lib.concatStringsSep ":" (map (pkg: "${pkg}/bin") buildInputs);
       args = [
         "-c"
         ''
