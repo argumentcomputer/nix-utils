@@ -41,6 +41,8 @@
           # Where the lean files are located
           src = ./test;
         };
+        joinDepsDerivationns = getSubDrv:
+          lib.concatStringsSep ":" (map (d: "${getSubDrv d}") ([ project ] ++ (builtins.attrValues project.allExternalDeps)));
       in
       {
         inherit project test;
@@ -56,8 +58,8 @@
           buildInputs = with pkgs; [
             leanPkgs.lean
           ];
-          LEAN_PATH = lib.concatStringsSep ":" (map (d: "${d.modRoot}") (builtins.attrValues project.allExternalDeps));
-          LEAN_SRC_PATH = lib.concatStringsSep ":" (map (d: "${d.src}") (builtins.attrValues project.allExternalDeps));
+          LEAN_PATH = joinDepsDerivationns (d: d.modRoot);
+          LEAN_SRC_PATH = joinDepsDerivationns (d: d.src);
         };
       });
 }
