@@ -43,7 +43,7 @@
           src = ./test;
         };
         joinDepsDerivationns = getSubDrv:
-          lib.concatStringsSep ":" (map (d: "${getSubDrv d}") ([ project ] ++ (builtins.attrValues project.allExternalDeps)));
+          pkgs.lib.concatStringsSep ":" (map (d: "${getSubDrv d}") ([ project ] ++ project.allExternalDeps));
       in
       {
         inherit project test;
@@ -54,7 +54,7 @@
         checks.test = test.executable;
 
         defaultPackage = self.packages.${system}.${name};
-        devShell = nixpkgs.mkShell {
+        devShell = pkgs.mkShell {
           inputsFrom = [ project.executable ];
           buildInputs = with pkgs; [
             leanPkgs.lean
