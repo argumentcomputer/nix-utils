@@ -3,18 +3,18 @@
 
   inputs = {
     lean = {
-      url = github:yatima-inc/lean4/acs/add-nix-ability-for-native-libs;
+      url = github:leanprover/lean4;
     };
     nixpkgs.url = github:nixos/nixpkgs/nixos-21.05;
-    flake-utils = {
-      url = github:numtide/flake-utils;
+    utils = {
+      url = github:yatima-inc/nix-utils;
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # A lean dependency
     lean-ipld.url = github:yatima-inc/lean-ipld;
   };
 
-  outputs = { self, lean, flake-utils, nixpkgs, lean-ipld }:
+  outputs = { self, lean, utils, nixpkgs, lean-ipld }:
     let
       supportedSystems = [
         # "aarch64-linux"
@@ -23,8 +23,9 @@
         "x86_64-darwin"
         "x86_64-linux"
       ];
+      inherit (utils) lib;
     in
-    flake-utils.lib.eachSystem supportedSystems (system:
+    lib.eachSystem supportedSystems (system:
       let
         leanPkgs = lean.packages.${system};
         pkgs = nixpkgs.legacyPackages.${system};
