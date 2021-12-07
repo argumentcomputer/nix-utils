@@ -11,7 +11,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # A lean dependency
-    lean-ipld.url = github:yatima-inc/lean-ipld;
+    lean-ipld = {
+      url = github:yatima-inc/lean-ipld;
+      # Compile dependencies with the same lean version
+      inputs.lean.follows = "lean";
+    };
   };
 
   outputs = { self, lean, utils, nixpkgs, lean-ipld }:
