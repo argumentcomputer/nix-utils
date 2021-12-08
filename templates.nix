@@ -12,4 +12,8 @@
     path = ./templates/lean-package;
     description = "A simple Lean package setup";
   };
+  nixGithubCI = {
+    path = ./templates/nix-github-ci;
+    description = "A Nix flakes github actions CI with cachix support.";
+  };
 }

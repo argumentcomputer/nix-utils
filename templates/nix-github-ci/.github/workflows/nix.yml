@@ -18,13 +18,13 @@ jobs:
         extra_nix_config: |
           experimental-features = nix-command flakes ca-references
           access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-    - uses: cachix/cachix-action@v16
+    - uses: cachix/cachix-action@v10
       with:
         name: yatima
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - name: Nix build
+    - name: Nix build default package
       run: nix build $NIX_BUILD_ARGS
-    - name: Nix check
+    - name: Nix flake check
       run: nix flake check $NIX_BUILD_ARGS
     - name: Nix shell
       run: nix shell $NIX_BUILD_ARGS --command echo OK
