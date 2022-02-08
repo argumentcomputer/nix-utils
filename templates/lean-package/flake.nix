@@ -47,11 +47,11 @@
           src = ./test;
         };
         joinDepsDerivationns = getSubDrv:
-          pkgs.lib.concatStringsSep ":" (map (d: "${getSubDrv d}") ([ project ] ++ project.allExternalDeps));
+          pkgs.lib.concatStringsSep ":" (map (d: "${getSubDrv d}") (project.allExternalDeps));
       in
       {
         inherit project test;
-        packages = {
+        packages = project // {
           ${name} = project.executable;
         };
 
@@ -61,10 +61,10 @@
         devShell = pkgs.mkShell {
           inputsFrom = [ project.executable ];
           buildInputs = with pkgs; [
-            leanPkgs.lean
+            leanPkgs.lean-dev
           ];
-          LEAN_PATH = joinDepsDerivationns (d: d.modRoot);
-          LEAN_SRC_PATH = joinDepsDerivationns (d: d.src);
+          LEAN_PATH = "./src:./test:" + joinDepsDerivationns (d: d.modRoot);
+          LEAN_SRC_PATH = "./src:./test:" + joinDepsDerivationns (d: d.src);
         };
       });
 }
