@@ -1,13 +1,13 @@
 {
   description = "Nix utils used across yatima inc projects.";
   inputs = {
-    nixpkgs.url = github:nixos/nixpkgs;
+    nixpkgs.url = "github:nixos/nixpkgs";
     flake-utils = {
-      url = github:numtide/flake-utils;
+      url = "github:numtide/flake-utils";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     naersk = {
-      url = github:yatima-inc/naersk;
+      url = "github:yatima-inc/naersk";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
