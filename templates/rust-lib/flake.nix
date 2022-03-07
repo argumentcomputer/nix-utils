@@ -33,14 +33,13 @@
       inherit (lib) buildRustProject testRustProject getRust filterRustProject;
       # Load a nightly rust. The hash takes precedence over the date so remember to set it to
       # something like `lib.fakeSha256` when changing the date.
-      rustNightly = getRust { date = "2021-12-01"; sha256 = "DhIP1w63/hMbWlgElJGBumEK/ExFWCdLaeBV5F8uWHc="; };
+      rust = getRust { date = "2022-02-20"; sha256 = "sha256-ZptNrC/0Eyr0c3IiXVWTJbuprFHq6E1KfBgqjGQBIRs="; };
       crateName = "my-crate";
       root = ./.;
       # This is a wrapper around naersk build
       # Remember to add Cargo.lock to git for naersk to work
       project = buildRustProject {
-        rust = rustNightly;
-        inherit root;
+        inherit root rust;
       };
     in
     {
@@ -57,7 +56,7 @@
       # `nix develop`
       devShell = pkgs.mkShell {
         inputsFrom = builtins.attrValues self.packages.${system};
-        nativeBuildInputs = [ rustNightly ];
+        nativeBuildInputs = [ rust ];
         buildInputs = with pkgs; [
           rust-analyzer
           clippy
