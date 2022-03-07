@@ -29,7 +29,11 @@
         { channel ? "nightly"
         , date
         , sha256
-        , targets ? [ "wasm32-unknown-unknown" "wasm32-wasi" ]
+        , targets ? [
+          "wasm32-unknown-unknown"
+          "wasm32-wasi"
+          # "wasm32-unknown-emscripten"
+        ]
         }: (rustTools.rustChannelOf {
           inherit channel date sha256;
         }).rust.override {
@@ -37,15 +41,13 @@
           extensions = [ "rust-src" "rust-analysis" ];
         };
       rust = getRust { date = "2022-02-20"; sha256 = "sha256-ZptNrC/0Eyr0c3IiXVWTJbuprFHq6E1KfBgqjGQBIRs="; };
-      rustDefault = rust;
       # Get a naersk with the input rust version
       naerskWithRust = rust: naersk.lib."${system}".override {
         rustc = rust;
         cargo = rust;
       };
       # Naersk using the default rust version
-      naerskDefault = naerskWithRust rustDefault;
-      buildRustProject = pkgs.makeOverridable ({ rust ? rustDefault, naersk ? naerskWithRust rust, ... } @ args: naersk.buildPackage ({
+      buildRustProject = pkgs.makeOverridable ({ rust, naersk ? naerskWithRust rust, ... } @ args: naersk.buildPackage ({
         buildInputs = with pkgs; [ ];
         targets = [ ];
         copyLibs = true;
@@ -54,7 +56,7 @@
       } // args));
 
       # Convenient for running tests
-      testRustProject = args: buildRustProject ({ doCheck = true; } // args);
+      testRustProject = args: buildRustProject ({ doCheck = true; inherit root rust; } // args);
       # Load a nightly rust. The hash takes precedence over the date so remember to set it to
       # something like `lib.fakeSha256` when changing the date.
       crateName = "my-crate";
@@ -68,7 +70,7 @@
     {
       packages = {
         ${crateName} = project;
-        "${crateName}-test" = testRustProject { inherit root; };
+        "${crateName}-test" = testRustProject {};
       };
 
       defaultPackage = self.packages.${system}.${crateName};
