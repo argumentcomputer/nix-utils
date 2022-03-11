@@ -11,14 +11,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # A lean dependency
-    lean-ipld = {
-      url = "github:yatima-inc/lean-ipld";
-      # Compile dependencies with the same lean version
-      inputs.lean.follows = "lean";
-    };
+    # lean-ipld = {
+    #   url = "github:yatima-inc/lean-ipld";
+    #   # Compile dependencies with the same lean version
+    #   inputs.lean.follows = "lean";
+    # };
   };
 
-  outputs = { self, lean, utils, nixpkgs, lean-ipld }:
+  outputs = { self, lean, flake-utils, nixpkgs }:
     let
       supportedSystems = [
         "aarch64-linux"
@@ -27,7 +27,7 @@
         "x86_64-darwin"
         "x86_64-linux"
       ];
-      inherit (utils) lib;
+      inherit (flake-utils) lib;
     in
     lib.eachSystem supportedSystems (system:
       let
@@ -53,9 +53,8 @@
         inherit project test;
         packages = project // {
           ${name} = project.executable;
+          test = test.executable;
         };
-
-        checks.test = test.executable;
 
         defaultPackage = self.packages.${system}.${name};
         devShell = pkgs.mkShell {
@@ -63,8 +62,8 @@
           buildInputs = with pkgs; [
             leanPkgs.lean-dev
           ];
-          LEAN_PATH = "./src:./test:" + joinDepsDerivations (d: d.modRoot);
-          LEAN_SRC_PATH = "./src:./test:" + joinDepsDerivations (d: d.src);
+          LEAN_PATH = "./src:./test";
+          LEAN_SRC_PATH = "./src:./test";
         };
       });
 }
