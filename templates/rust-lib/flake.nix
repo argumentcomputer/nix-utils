@@ -40,7 +40,8 @@
           inherit targets;
           extensions = [ "rust-src" "rust-analysis" ];
         };
-      rust = getRust { date = "2022-02-20"; sha256 = "sha256-ZptNrC/0Eyr0c3IiXVWTJbuprFHq6E1KfBgqjGQBIRs="; };
+      rust2022-03-15 = getRust { date = "2022-03-15"; sha256 = "sha256-C7X95SGY0D7Z17I8J9hg3z9cRnpXP7FjAOkvEdtB9nE="; };
+      rust = rust2022-03-15;
       # Get a naersk with the input rust version
       naerskWithRust = rust: naersk.lib."${system}".override {
         rustc = rust;
@@ -55,8 +56,6 @@
           true; # remove nix store references for a smaller output package
       } // args));
 
-      # Convenient for running tests
-      testRustProject = args: buildRustProject ({ doCheck = true; inherit root rust; } // args);
       # Load a nightly rust. The hash takes precedence over the date so remember to set it to
       # something like `lib.fakeSha256` when changing the date.
       crateName = "my-crate";
@@ -66,11 +65,15 @@
       project = buildRustProject {
         inherit root rust;
       };
+      # Running tests
+      testProject = project.override {
+        doCheck = true;
+      };
     in
     {
       packages = {
         ${crateName} = project;
-        "${crateName}-test" = testRustProject {};
+        "${crateName}-test" = testProject;
       };
 
       defaultPackage = self.packages.${system}.${crateName};
